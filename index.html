@@ -1,0 +1,956 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillTrack | Learn. Track. Improve.</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">S</div>
+            <span>SkillTrack</span>
+        </div>
+
+        <p class="menu-label">MENU</p>
+
+        <nav class="navigation">
+            <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="#skills" class="nav-link" data-section="skills">
+                <span>◈</span> My Skills
+            </a>
+
+            <a href="#learning" class="nav-link" data-section="learning">
+                <span>◷</span> Learning Log
+            </a>
+
+            <a href="#analytics" class="nav-link" data-section="analytics">
+                <span>▥</span> Analytics
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-tip">
+                <div class="tip-icon">✦</div>
+                <h3>Keep growing!</h3>
+                <p>Small progress every day leads to big results.</p>
+            </div>
+
+            <button class="nav-link theme-button" id="themeToggle">
+                <span id="themeIcon">☾</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+
+            <div class="profile">
+                <div class="avatar">ST</div>
+                <div>
+                    <strong>SkillTrack User</strong>
+                    <small>Learning journey</small>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="currentDate"></p>
+                </div>
+            </div>
+
+            <button class="primary-button" id="headerAddButton">
+                <span>＋</span> Add Skill
+            </button>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page-section">
+
+            <div class="welcome-banner">
+                <div>
+                    <span class="eyebrow">YOUR PERSONAL LEARNING SPACE</span>
+                    <h2>Keep learning, keep growing! 🚀</h2>
+                    <p>Every skill you practise brings you one step closer to your goals.</p>
+                    <button class="banner-button" id="exploreSkillsButton">
+                        Explore My Skills →
+                    </button>
+                </div>
+
+                <div class="banner-art" aria-hidden="true">
+                    <div class="art-circle">
+                        <span>🎯</span>
+                    </div>
+                    <div class="art-star star-one">✦</div>
+                    <div class="art-star star-two">✧</div>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Total Skills</span>
+                        <div class="stat-icon purple">◈</div>
+                    </div>
+                    <h3 id="totalSkills">0</h3>
+                    <p>Skills in your journey</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Completed</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <h3 id="completedSkills">0</h3>
+                    <p>Skills mastered</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>In Progress</span>
+                        <div class="stat-icon orange">↗</div>
+                    </div>
+                    <h3 id="inProgressSkills">0</h3>
+                    <p>Keep pushing forward</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Hours</span>
+                        <div class="stat-icon blue">◷</div>
+                    </div>
+                    <h3 id="totalHours">0h</h3>
+                    <p>Total time invested</p>
+                </article>
+
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- SKILLS OVERVIEW -->
+                <article class="panel skills-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>My Skills</h3>
+                            <p>Your current learning progress</p>
+                        </div>
+                        <button class="text-button" id="viewAllSkills">View all →</button>
+                    </div>
+
+                    <div id="dashboardSkills" class="dashboard-skills"></div>
+                </article>
+
+                <!-- QUICK ACTION -->
+                <article class="panel quick-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Quick Actions</h3>
+                            <p>Make today productive</p>
+                        </div>
+                    </div>
+
+                    <button class="quick-action" id="quickAddSkill">
+                        <span class="quick-icon purple">＋</span>
+                        <span>
+                            <strong>Add a new skill</strong>
+                            <small>Start learning something new</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+
+                    <button class="quick-action" id="quickLogHours">
+                        <span class="quick-icon green">◷</span>
+                        <span>
+                            <strong>Log learning hours</strong>
+                            <small>Record your progress today</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+
+                    <button class="quick-action" id="quickAnalytics">
+                        <span class="quick-icon orange">▥</span>
+                        <span>
+                            <strong>View analytics</strong>
+                            <small>See how far you've come</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+                </article>
+
+            </div>
+
+            <!-- WEEKLY CHART -->
+            <article class="panel chart-panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Weekly Learning Activity</h3>
+                        <p>Hours invested in your growth</p>
+                    </div>
+                    <span class="chart-badge">Last 7 days</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- MY SKILLS -->
+        <section id="skills" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>My Skills</h2>
+                    <p>Manage your skills and track your progress.</p>
+                </div>
+
+                <button class="primary-button" id="skillsAddButton">＋ Add Skill</button>
+            </div>
+
+            <div class="filter-bar">
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="search" id="skillSearch" placeholder="Search skills...">
+                </div>
+
+                <select id="categoryFilter" aria-label="Filter by category">
+                    <option value="All">All Categories</option>
+                    <option value="Programming">Programming</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Database">Database</option>
+                    <option value="Design">Design</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <select id="statusFilter" aria-label="Filter by status">
+                    <option value="All">All Status</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Not Started">Not Started</option>
+                </select>
+            </div>
+
+            <div id="skillsGrid" class="skills-grid"></div>
+
+        </section>
+
+        <!-- LEARNING LOG -->
+        <section id="learning" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Learning Log</h2>
+                    <p>Record what you learn and how much time you spend.</p>
+                </div>
+            </div>
+
+            <article class="panel log-form-panel">
+                <h3>Record a Learning Session</h3>
+
+                <form id="logForm">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="logSkill">Skill</label>
+                            <select id="logSkill" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logHours">Hours spent</label>
+                            <input type="number" id="logHours" min="0.1" max="24" step="0.1" placeholder="e.g. 1.5" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="logTopic">What did you learn?</label>
+                            <input type="text" id="logTopic" maxlength="200" placeholder="e.g. Python functions and loops" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logDate">Learning date</label>
+                            <input type="date" id="logDate" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">＋ Save Learning Session</button>
+
+                </form>
+            </article>
+
+            <article class="panel log-history-panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Recent Learning Activity</h3>
+                        <p>Your recorded learning sessions</p>
+                    </div>
+                </div>
+
+                <div id="learningHistory"></div>
+            </article>
+
+        </section>
+
+        <!-- ANALYTICS -->
+        <section id="analytics" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Learning Analytics</h2>
+                    <p>Understand your learning habits and progress.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Overall Progress</span>
+                        <div class="stat-icon purple">↗</div>
+                    </div>
+                    <h3 id="overallProgress">0%</h3>
+                    <p>Average across all skills</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Sessions</span>
+                        <div class="stat-icon blue">◷</div>
+                    </div>
+                    <h3 id="totalSessions">0</h3>
+                    <p>Sessions recorded</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Days</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <h3 id="learningDays">0</h3>
+                    <p>Distinct days recorded</p>
+                </article>
+            </div>
+
+            <div class="dashboard-grid analytics-grid">
+
+                <article class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Skill Progress</h3>
+                            <p>Progress percentage for each skill</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="skillChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Learning Distribution</h3>
+                            <p>Hours spent per skill</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            <p>© <span id="footerYear"></span> SkillTrack. Learn something new every day. ✦</p>
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- ADD / EDIT SKILL MODAL -->
+<div class="modal-overlay hidden" id="skillModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Add New Skill</h2>
+                <p>Define a skill and your learning goal.</p>
+            </div>
+
+            <button type="button" class="close-button" id="closeModal" aria-label="Close">×</button>
+        </div>
+
+        <form id="skillForm">
+
+            <input type="hidden" id="editSkillId">
+
+            <div class="form-group">
+                <label for="skillName">Skill Name *</label>
+                <input type="text" id="skillName" maxlength="60" placeholder="e.g. Python" required>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="skillCategory">Category *</label>
+                    <select id="skillCategory" required>
+                        <option value="Programming">Programming</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Database">Database</option>
+                        <option value="Design">Design</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillLevel">Current Level *</label>
+                    <select id="skillLevel" required>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillProgress">Progress (%)</label>
+                    <input type="number" id="skillProgress" min="0" max="100" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillGoal">Daily Goal (minutes)</label>
+                    <input type="number" id="skillGoal" min="1" max="1440" value="30" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="skillDeadline">Target Date</label>
+                    <input type="date" id="skillDeadline">
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="secondary-button" id="cancelModal">Cancel</button>
+                <button type="submit" class="primary-button">Save Skill</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+```
+```html
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillTrack | Learn. Track. Improve.</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">S</div>
+            <span>SkillTrack</span>
+        </div>
+
+        <p class="menu-label">MENU</p>
+
+        <nav class="navigation">
+            <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="#skills" class="nav-link" data-section="skills">
+                <span>◈</span> My Skills
+            </a>
+
+            <a href="#learning" class="nav-link" data-section="learning">
+                <span>◷</span> Learning Log
+            </a>
+
+            <a href="#analytics" class="nav-link" data-section="analytics">
+                <span>▥</span> Analytics
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-tip">
+                <div class="tip-icon">✦</div>
+                <h3>Keep growing!</h3>
+                <p>Small progress every day leads to big results.</p>
+            </div>
+
+            <button class="nav-link theme-button" id="themeToggle">
+                <span id="themeIcon">☾</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+
+            <div class="profile">
+                <div class="avatar">ST</div>
+                <div>
+                    <strong>SkillTrack User</strong>
+                    <small>Learning journey</small>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="currentDate"></p>
+                </div>
+            </div>
+
+            <button class="primary-button" id="headerAddButton">
+                <span>＋</span> Add Skill
+            </button>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page-section">
+
+            <div class="welcome-banner">
+                <div>
+                    <span class="eyebrow">YOUR PERSONAL LEARNING SPACE</span>
+                    <h2>Keep learning, keep growing! 🚀</h2>
+                    <p>Every skill you practise brings you one step closer to your goals.</p>
+                    <button class="banner-button" id="exploreSkillsButton">
+                        Explore My Skills →
+                    </button>
+                </div>
+
+                <div class="banner-art" aria-hidden="true">
+                    <div class="art-circle">
+                        <span>🎯</span>
+                    </div>
+                    <div class="art-star star-one">✦</div>
+                    <div class="art-star star-two">✧</div>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Total Skills</span>
+                        <div class="stat-icon purple">◈</div>
+                    </div>
+                    <h3 id="totalSkills">0</h3>
+                    <p>Skills in your journey</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Completed</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <h3 id="completedSkills">0</h3>
+                    <p>Skills mastered</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>In Progress</span>
+                        <div class="stat-icon orange">↗</div>
+                    </div>
+                    <h3 id="inProgressSkills">0</h3>
+                    <p>Keep pushing forward</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Hours</span>
+                        <div class="stat-icon blue">◷</div>
+                    </div>
+                    <h3 id="totalHours">0h</h3>
+                    <p>Total time invested</p>
+                </article>
+
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- SKILLS OVERVIEW -->
+                <article class="panel skills-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>My Skills</h3>
+                            <p>Your current learning progress</p>
+                        </div>
+                        <button class="text-button" id="viewAllSkills">View all →</button>
+                    </div>
+
+                    <div id="dashboardSkills" class="dashboard-skills"></div>
+                </article>
+
+                <!-- QUICK ACTION -->
+                <article class="panel quick-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Quick Actions</h3>
+                            <p>Make today productive</p>
+                        </div>
+                    </div>
+
+                    <button class="quick-action" id="quickAddSkill">
+                        <span class="quick-icon purple">＋</span>
+                        <span>
+                            <strong>Add a new skill</strong>
+                            <small>Start learning something new</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+
+                    <button class="quick-action" id="quickLogHours">
+                        <span class="quick-icon green">◷</span>
+                        <span>
+                            <strong>Log learning hours</strong>
+                            <small>Record your progress today</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+
+                    <button class="quick-action" id="quickAnalytics">
+                        <span class="quick-icon orange">▥</span>
+                        <span>
+                            <strong>View analytics</strong>
+                            <small>See how far you've come</small>
+                        </span>
+                        <span class="arrow">→</span>
+                    </button>
+                </article>
+
+            </div>
+
+            <!-- WEEKLY CHART -->
+            <article class="panel chart-panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Weekly Learning Activity</h3>
+                        <p>Hours invested in your growth</p>
+                    </div>
+                    <span class="chart-badge">Last 7 days</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- MY SKILLS -->
+        <section id="skills" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>My Skills</h2>
+                    <p>Manage your skills and track your progress.</p>
+                </div>
+
+                <button class="primary-button" id="skillsAddButton">＋ Add Skill</button>
+            </div>
+
+            <div class="filter-bar">
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="search" id="skillSearch" placeholder="Search skills...">
+                </div>
+
+                <select id="categoryFilter" aria-label="Filter by category">
+                    <option value="All">All Categories</option>
+                    <option value="Programming">Programming</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Database">Database</option>
+                    <option value="Design">Design</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <select id="statusFilter" aria-label="Filter by status">
+                    <option value="All">All Status</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Not Started">Not Started</option>
+                </select>
+            </div>
+
+            <div id="skillsGrid" class="skills-grid"></div>
+
+        </section>
+
+        <!-- LEARNING LOG -->
+        <section id="learning" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Learning Log</h2>
+                    <p>Record what you learn and how much time you spend.</p>
+                </div>
+            </div>
+
+            <article class="panel log-form-panel">
+                <h3>Record a Learning Session</h3>
+
+                <form id="logForm">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="logSkill">Skill</label>
+                            <select id="logSkill" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logHours">Hours spent</label>
+                            <input type="number" id="logHours" min="0.1" max="24" step="0.1" placeholder="e.g. 1.5" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="logTopic">What did you learn?</label>
+                            <input type="text" id="logTopic" maxlength="200" placeholder="e.g. Python functions and loops" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logDate">Learning date</label>
+                            <input type="date" id="logDate" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">＋ Save Learning Session</button>
+
+                </form>
+            </article>
+
+            <article class="panel log-history-panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Recent Learning Activity</h3>
+                        <p>Your recorded learning sessions</p>
+                    </div>
+                </div>
+
+                <div id="learningHistory"></div>
+            </article>
+
+        </section>
+
+        <!-- ANALYTICS -->
+        <section id="analytics" class="page-section hidden">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Learning Analytics</h2>
+                    <p>Understand your learning habits and progress.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Overall Progress</span>
+                        <div class="stat-icon purple">↗</div>
+                    </div>
+                    <h3 id="overallProgress">0%</h3>
+                    <p>Average across all skills</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Sessions</span>
+                        <div class="stat-icon blue">◷</div>
+                    </div>
+                    <h3 id="totalSessions">0</h3>
+                    <p>Sessions recorded</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span>Learning Days</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <h3 id="learningDays">0</h3>
+                    <p>Distinct days recorded</p>
+                </article>
+            </div>
+
+            <div class="dashboard-grid analytics-grid">
+
+                <article class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Skill Progress</h3>
+                            <p>Progress percentage for each skill</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="skillChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Learning Distribution</h3>
+                            <p>Hours spent per skill</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            <p>© <span id="footerYear"></span> SkillTrack. Learn something new every day. ✦</p>
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- ADD / EDIT SKILL MODAL -->
+<div class="modal-overlay hidden" id="skillModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Add New Skill</h2>
+                <p>Define a skill and your learning goal.</p>
+            </div>
+
+            <button type="button" class="close-button" id="closeModal" aria-label="Close">×</button>
+        </div>
+
+        <form id="skillForm">
+
+            <input type="hidden" id="editSkillId">
+
+            <div class="form-group">
+                <label for="skillName">Skill Name *</label>
+                <input type="text" id="skillName" maxlength="60" placeholder="e.g. Python" required>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="skillCategory">Category *</label>
+                    <select id="skillCategory" required>
+                        <option value="Programming">Programming</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Database">Database</option>
+                        <option value="Design">Design</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillLevel">Current Level *</label>
+                    <select id="skillLevel" required>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillProgress">Progress (%)</label>
+                    <input type="number" id="skillProgress" min="0" max="100" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillGoal">Daily Goal (minutes)</label>
+                    <input type="number" id="skillGoal" min="1" max="1440" value="30" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="skillDeadline">Target Date</label>
+                    <input type="date" id="skillDeadline">
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="secondary-button" id="cancelModal">Cancel</button>
+                <button type="submit" class="primary-button">Save Skill</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+-->
+
