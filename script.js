@@ -1,4 +1,3 @@
-
 "use strict";
 
 // ==========================================
@@ -7,6 +6,7 @@
 
 const STORAGE_KEY = "skilltrack_data_v1";
 const THEME_KEY = "skilltrack_theme_v1";
+const SECTIONS = ["dashboard", "skills", "explore", "learning", "analytics"];
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -70,6 +70,12 @@ function loadData() {
                 ? data.logs.filter(isValidLog)
                 : [];
 
+            // First-run sample skills with no sessions: add sample sessions so pages aren't empty.
+            if (!logs.length && skills.length && skills.every(item => item.id.startsWith("sample-"))) {
+                logs = sampleLogs();
+                saveData();
+            }
+
             return;
         }
     } catch (error) {
@@ -120,9 +126,33 @@ function loadData() {
         }
     ];
 
-    logs = [];
+    logs = sampleLogs();
 
     saveData();
+}
+
+function dateOffset(days) {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
+function sampleLogs() {
+    return [
+        ["sample-python", 1.5, "Functions, loops and list comprehensions", 0],
+        ["sample-javascript", 1, "DOM events and form handling", 1],
+        ["sample-sql", 2, "JOINs and GROUP BY queries", 2],
+        ["sample-python", 1, "File handling and exceptions", 3],
+        ["sample-html", 0.5, "Semantic HTML and accessibility", 4],
+        ["sample-sql", 1.5, "Subqueries and indexes", 5],
+        ["sample-javascript", 2, "Arrays, objects and fetch API", 6]
+    ].map(([skillId, hours, topic, ago], i) => ({
+        id: "sample-log-" + i, skillId, hours, topic, date: dateOffset(ago), createdAt: Date.now() - i
+    }));
 }
 
 function isValidSkill(skill) {
@@ -254,12 +284,7 @@ function emptyState(icon, title, message, buttonText = "") {
 // ==========================================
 
 function showSection(sectionId) {
-    const validSections = [
-        "dashboard",
-        "skills",
-        "learning",
-        "analytics"
-    ];
+    const validSections = SECTIONS;
 
     if (!validSections.includes(sectionId)) {
         sectionId = "dashboard";
@@ -281,6 +306,7 @@ function showSection(sectionId) {
 
     const titles = {
         dashboard: "Dashboard",
+        explore: "Explore Skills",
         skills: "My Skills",
         learning: "Learning Log",
         analytics: "Analytics"
@@ -288,7 +314,9 @@ function showSection(sectionId) {
 
     $("#pageTitle").textContent = titles[sectionId];
 
-    history.replaceState(null, "", `#${sectionId}`);
+    try { history.replaceState(null, "", `#${sectionId}`); } catch (error) { /* ignore */ }
+
+    if (sectionId === "explore") renderExplore();
 
     $("#sidebar").classList.remove("open");
 
@@ -309,7 +337,7 @@ document.querySelectorAll(".nav-link[data-section]").forEach(link => {
 });
 
 $("#exploreSkillsButton").addEventListener("click", () => {
-    showSection("skills");
+    showSection("explore");
 });
 
 $("#viewAllSkills").addEventListener("click", () => {
@@ -362,7 +390,7 @@ function openSkillModal(skill = null) {
         $("#skillDeadline").value = skill.deadline || "";
     }
 
-    $("#skillProgressValue").textContent = `${Number($("#skillProgress").value)}%`;
+    updateProgressLabel();
 
     $("#skillModal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
@@ -488,9 +516,12 @@ $("#skillForm").addEventListener("submit", event => {
     renderAll();
 });
 
-$("#skillProgress").addEventListener("input", event => {
-    $("#skillProgressValue").textContent = `${event.target.value}%`;
-});
+function updateProgressLabel() {
+    const label = $("#skillProgressValue");
+    if (label) label.textContent = `${Number($("#skillProgress").value)}%`;
+}
+
+$("#skillProgress").addEventListener("input", updateProgressLabel);
 
 // ==========================================
 // RENDER SKILL CARDS
@@ -607,6 +638,8 @@ function renderSkills() {
                             : `${Number(skill.goal)} min/day`)}
                     </span>
 
+                    <button class="update-button" data-action="log" data-id="${escapeHTML(skill.id)}">◷ Log time</button>
+
                 </div>
 
                 <p class="skill-category" style="margin-top:12px">
@@ -667,6 +700,19 @@ document.addEventListener("click", event => {
 
     if (action === "add-skill") {
         openSkillModal();
+        return;
+    }
+
+    if (action === "log") {
+        showSection("learning");
+        populateLogSkills();
+        $("#logSkill").value = id;
+        $("#logHours").focus();
+        return;
+    }
+
+    if (action === "add-explore") {
+        addFromCatalog(button.dataset.name);
         return;
     }
 
@@ -1137,18 +1183,24 @@ function renderAnalyticsCharts() {
         }
     });
 
+}
+
+function renderAnalyticsStats() {
     const overall = skills.length
-        ? Math.round(
-            skills.reduce((sum, skill) => sum + Number(skill.progress), 0)
-            / skills.length
-        )
+        ? Math.round(skills.reduce((sum, skill) => sum + Number(skill.progress), 0) / skills.length)
         : 0;
 
-    const distinctDays = new Set(logs.map(log => log.date));
+    const days = new Set(logs.map(log => log.date));
+
+    // streak: consecutive days ending today (or yesterday if nothing logged yet today)
+    let streak = 0;
+    let offset = days.has(dateOffset(0)) ? 0 : 1;
+    while (days.has(dateOffset(offset))) { streak++; offset++; }
 
     $("#overallProgress").textContent = `${overall}%`;
     $("#totalSessions").textContent = logs.length;
-    $("#learningDays").textContent = distinctDays.size;
+    $("#learningDays").textContent = days.size;
+    $("#learningStreak").textContent = streak;
 }
 
 // ==========================================
@@ -1168,7 +1220,7 @@ function toggleTheme() {
     const isDark = document.body.classList.contains("dark");
     const newTheme = isDark ? "light" : "dark";
 
-    localStorage.setItem(THEME_KEY, newTheme);
+    try { localStorage.setItem(THEME_KEY, newTheme); } catch (error) { /* ignore */ }
 
     applyTheme(newTheme);
 
@@ -1182,6 +1234,100 @@ function toggleTheme() {
 $("#themeToggle").addEventListener("click", toggleTheme);
 
 // ==========================================
+// EXPLORE SKILLS
+// ==========================================
+
+const CATALOG = [
+    ["Python", "Programming", "Beginner", "Automation, scripting, data analysis and backend basics."],
+    ["Java", "Programming", "Beginner", "Object-oriented programming for apps, Android and enterprise."],
+    ["C++", "Programming", "Intermediate", "Fast, low-level programming for systems and competitive coding."],
+    ["Data Structures", "Programming", "Intermediate", "Arrays, trees, graphs and algorithms for interviews and efficient code."],
+    ["Git & GitHub", "Programming", "Beginner", "Version control, branches, pull requests and collaboration."],
+    ["HTML", "Web Development", "Beginner", "Structure web pages with semantic, accessible markup."],
+    ["CSS", "Web Development", "Beginner", "Layouts, Flexbox, Grid, animations and responsive design."],
+    ["JavaScript", "Web Development", "Beginner", "Make websites interactive: DOM, events, async code and APIs."],
+    ["React", "Web Development", "Intermediate", "Build component-based user interfaces with hooks and state."],
+    ["Node.js", "Web Development", "Intermediate", "Run JavaScript on the server and build REST APIs."],
+    ["SQL", "Database", "Beginner", "Query, join and aggregate data in relational databases."],
+    ["MongoDB", "Database", "Intermediate", "Document-oriented NoSQL database for flexible data models."],
+    ["PostgreSQL", "Database", "Intermediate", "Advanced relational database features, indexing and performance."],
+    ["Database Design", "Database", "Intermediate", "ER modelling, normalization and schema planning."],
+    ["UI/UX Design", "Design", "Beginner", "User research, wireframes and usable, friendly interfaces."],
+    ["Figma", "Design", "Beginner", "Design screens, prototypes and design systems collaboratively."],
+    ["Graphic Design", "Design", "Beginner", "Typography, colour theory and layout for visual communication."],
+    ["Communication", "Other", "Beginner", "Express ideas clearly in writing and conversation."],
+    ["Public Speaking", "Other", "Beginner", "Present with confidence and structure talks that land."],
+    ["Time Management", "Other", "Beginner", "Plan, prioritise and build a consistent study routine."],
+    ["Problem Solving", "Other", "Intermediate", "Break down problems and think logically under pressure."]
+].map(([name, category, level, description]) => ({ name, category, level, description }));
+
+function renderExplore() {
+    const search = $("#exploreSearch").value.trim().toLowerCase();
+    const category = $("#exploreCategory").value;
+
+    const items = CATALOG.filter(item =>
+        (category === "All" || item.category === category) &&
+        (item.name + " " + item.category + " " + item.description).toLowerCase().includes(search)
+    );
+
+    const container = $("#exploreGrid");
+
+    if (!items.length) {
+        container.innerHTML = emptyState("⌕", "No skills found", "Try a different search or category.");
+        return;
+    }
+
+    container.innerHTML = items.map((item, index) => {
+        const color = getSkillColor(CATALOG.indexOf(item));
+        const added = skills.some(skill => skill.name.toLowerCase() === item.name.toLowerCase());
+
+        return `
+            <article class="skill-card">
+                <div class="skill-card-top">
+                    <div class="skill-card-icon" style="background:${color}18;color:${color}">
+                        ${escapeHTML(getSkillIcon(item))}
+                    </div>
+                    <span class="status-badge progress">${escapeHTML(item.level)}</span>
+                </div>
+                <h3>${escapeHTML(item.name)}</h3>
+                <p class="skill-category">${escapeHTML(item.category)}</p>
+                <p class="explore-desc">${escapeHTML(item.description)}</p>
+                <button class="update-button explore-add" data-action="add-explore"
+                        data-name="${escapeHTML(item.name)}" ${added ? "disabled" : ""}>
+                    ${added ? "✓ In My Skills" : "＋ Add to My Skills"}
+                </button>
+            </article>
+        `;
+    }).join("");
+}
+
+function addFromCatalog(name) {
+    const item = CATALOG.find(entry => entry.name === name);
+
+    if (!item || skills.some(skill => skill.name.toLowerCase() === name.toLowerCase())) return;
+
+    skills.unshift({
+        id: crypto.randomUUID
+            ? crypto.randomUUID()
+            : String(Date.now()) + Math.random().toString(16).slice(2),
+        name: item.name,
+        category: item.category,
+        level: item.level,
+        progress: 0,
+        goal: 30,
+        deadline: "",
+        createdAt: Date.now()
+    });
+
+    saveData();
+    renderAll();
+    showToast(`${item.name} added to My Skills!`);
+}
+
+$("#exploreSearch").addEventListener("input", renderExplore);
+$("#exploreCategory").addEventListener("change", renderExplore);
+
+// ==========================================
 // UPDATE EVERYTHING
 // ==========================================
 
@@ -1190,6 +1336,9 @@ function renderAll() {
     renderSkills();
     populateLogSkills();
     renderLearningHistory();
+
+    renderAnalyticsStats();
+    renderExplore();
 
     renderWeeklyChart();
 
@@ -1217,21 +1366,24 @@ function initialize() {
 
     $("#footerYear").textContent = new Date().getFullYear();
 
-    const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch (error) { /* ignore */ }
 
-    applyTheme(savedTheme);
+    applyTheme(savedTheme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 
     renderAll();
+
+    if (typeof Chart === "undefined") {
+        showToast("Charts could not load. Check your internet connection.");
+    }
 
     const initialSection = location.hash.replace("#", "");
 
     showSection(
-        ["dashboard", "skills", "learning", "analytics"]
-            .includes(initialSection)
+        SECTIONS.includes(initialSection)
             ? initialSection
             : "dashboard"
     );
 }
 
 initialize();
-

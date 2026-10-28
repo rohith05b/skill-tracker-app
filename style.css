@@ -1,4 +1,3 @@
-
 :root {
     --primary: #7c3aed;
     --primary-dark: #6d28d9;
@@ -25,7 +24,7 @@ html {
 }
 
 body {
-    font-family: "DM Sans", sans-serif;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     background: var(--bg);
     color: var(--text);
     font-size: 14px;
@@ -1159,9 +1158,32 @@ button:disabled {
     }
 }
 
+.explore-desc {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+    margin: 12px 0 16px;
+}
+
+.explore-add {
+    width: 100%;
+    padding: 10px;
+}
+
+.explore-add:disabled {
+    color: var(--green);
+    background: var(--bg);
+    opacity: 1;
+}
+
+.skill-card-top .status-badge {
+    margin-left: auto;
+}
+
 /* DARK MODE */
 
 body.dark {
+    color-scheme: dark;
     --bg: #11121b;
     --card: #1b1c29;
     --text: #f0f0f8;
@@ -1201,6 +1223,20 @@ body.dark .status-badge.progress {
 body.dark .status-badge.started {
     background: #41301d;
     color: #fcd34d;
+}
+
+body.dark .form-group input::placeholder,
+body.dark .search-box input::placeholder {
+    color: #7b7c92;
+}
+
+body.dark .secondary-button {
+    background: #242536;
+}
+
+body.dark .update-button:hover,
+body.dark .close-button:hover {
+    background: #302448;
 }
 
 body.dark .progress-track {
